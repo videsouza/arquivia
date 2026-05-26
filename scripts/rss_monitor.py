@@ -33,7 +33,7 @@ for entry in feed.entries[:5]:
         "titulo": titulo,
         "link": link,
         "revista": "Ciência da Informação",
-        "publicado_em": publicado
+        "publicado_em": None
     }
 
     response = supabase.table("articles").upsert(
