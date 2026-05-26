@@ -12,7 +12,7 @@ print("Conectando ao Supabase...")
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-rss_url = "https://revista.ibict.br/ciinf/gateway/plugin/WebFeedGatewayPlugin/rss2"
+rss_url = "https://periodicos.ufmg.br/index.php/pci/gateway/plugin/WebFeedGatewayPlugin/rss2"
 
 print("Lendo RSS...")
 
