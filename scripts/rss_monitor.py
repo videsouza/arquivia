@@ -27,10 +27,7 @@ for entry in feed.entries[:5]:
     titulo = entry.title
     link = entry.link
 
-    publicado = None
-
-    if hasattr(entry, "published"):
-        publicado = parser.parse(entry.published).isoformat()
+    publicado = entry.get("published", None)
 
     artigo = {
         "titulo": titulo,
