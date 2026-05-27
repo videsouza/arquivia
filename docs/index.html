@@ -347,6 +347,34 @@
 
     }
 
+    .controls {
+
+  display: flex;
+
+  gap: 14px;
+
+  flex-wrap: wrap;
+
+  margin-bottom: 30px;
+
+}
+
+.controls select {
+
+  padding: 14px 18px;
+
+  border-radius: 14px;
+
+  border: 1px solid #d1d5db;
+
+  background: white;
+
+  font-size: 15px;
+
+  cursor: pointer;
+
+}
+
   </style>
 
 </head>
@@ -430,10 +458,46 @@
     <input
       type="text"
       id="search"
-      placeholder="Pesquisar artigos, temas, autores..."
+      placeholder=" artigos, temas, autores..."
     >
 
   </div>
+
+  <div class="controls">
+
+  <select id="sort">
+
+    <option value="recentes">
+      Mais recentes
+    </option>
+
+    <option value="antigos">
+      Mais antigos
+    </option>
+
+    <option value="titulo">
+      Ordem alfabética
+    </option>
+
+  </select>
+
+  <select id="filtro-revista">
+
+    <option value="">
+      Todas as revistas
+    </option>
+
+  </select>
+
+  <select id="filtro-categoria">
+
+    <option value="">
+      Todas as categorias
+    </option>
+
+  </select>
+
+</div>
 
   <!-- =====================================
        TAGS
@@ -456,6 +520,7 @@
       "sb_publishable_Wbv87CIIGPWJu-uSy2PvZg_sX9TU9vE";
 
     let artigosGlobais = [];
+    let artigosFiltrados = [];
 
     // =====================================
     // FORMATAR DATA
@@ -653,8 +718,29 @@
       .getElementById("search")
       .addEventListener(
         "input",
-        pesquisar
+        aplicarFiltros
       );
+
+    document
+  .getElementById("sort")
+  .addEventListener(
+    "change",
+    aplicarFiltros
+  );
+
+document
+  .getElementById("filtro-revista")
+  .addEventListener(
+    "change",
+    aplicarFiltros
+  );
+
+document
+  .getElementById("filtro-categoria")
+  .addEventListener(
+    "change",
+    aplicarFiltros
+  );
 
     function pesquisar(evento) {
 
@@ -687,6 +773,142 @@
     }
 
     // =====================================
+    // FILTROS
+    // =====================================
+
+    function popularFiltros() {
+
+  const revistas =
+    new Set(
+      artigosGlobais.map(a => a.revista)
+    );
+
+  const categorias =
+    new Set(
+      artigosGlobais.map(a => a.categoria)
+    );
+
+  const revistaSelect =
+    document.getElementById(
+      "filtro-revista"
+    );
+
+  const categoriaSelect =
+    document.getElementById(
+      "filtro-categoria"
+    );
+
+  revistas.forEach(revista => {
+
+    revistaSelect.innerHTML += `
+      <option value="${revista}">
+        ${revista}
+      </option>
+    `;
+
+  });
+
+  categorias.forEach(categoria => {
+
+    categoriaSelect.innerHTML += `
+      <option value="${categoria}">
+        ${categoria}
+      </option>
+    `;
+
+  });
+
+}
+    function aplicarFiltros() {
+
+  const termo =
+    document
+      .getElementById("search")
+      .value
+      .toLowerCase();
+
+  const revista =
+    document
+      .getElementById("filtro-revista")
+      .value;
+
+  const categoria =
+    document
+      .getElementById("filtro-categoria")
+      .value;
+
+  const ordenacao =
+    document
+      .getElementById("sort")
+      .value;
+
+  let resultado =
+    artigosGlobais.filter(artigo => {
+
+      const texto = `
+
+        ${artigo.titulo || ""}
+        ${artigo.autores || ""}
+        ${artigo.categoria || ""}
+        ${artigo.resumo_ia || ""}
+        ${(artigo.tags_ia || []).join(" ")}
+
+      `.toLowerCase();
+
+      const matchTexto =
+        texto.includes(termo);
+
+      const matchRevista =
+        !revista ||
+        artigo.revista === revista;
+
+      const matchCategoria =
+        !categoria ||
+        artigo.categoria === categoria;
+
+      return (
+        matchTexto &&
+        matchRevista &&
+        matchCategoria
+      );
+
+    });
+
+  // ORDENAÇÃO
+
+  if (ordenacao === "recentes") {
+
+    resultado.sort((a, b) =>
+      new Date(b.publicado_em)
+      - new Date(a.publicado_em)
+    );
+
+  }
+
+  if (ordenacao === "antigos") {
+
+    resultado.sort((a, b) =>
+      new Date(a.publicado_em)
+      - new Date(b.publicado_em)
+    );
+
+  }
+
+  if (ordenacao === "titulo") {
+
+    resultado.sort((a, b) =>
+      a.titulo.localeCompare(b.titulo)
+    );
+
+  }
+
+  artigosFiltrados = resultado;
+
+  renderizar(resultado);
+
+}
+
+    // =====================================
     // LOAD
     // =====================================
 
@@ -706,6 +928,7 @@
 
       artigosGlobais = dados;
 
+      popularFiltros();
       renderizar(dados);
 
       criarFiltrosTags();
