@@ -1,16 +1,14 @@
 import os
-import json
 import feedparser
 
 from supabase import create_client
-from openai import OpenAI
 from sources import FONTES
 
 print("Iniciando ArquivIA...")
 
-# =========================
+# =========================================
 # SUPABASE
-# =========================
+# =========================================
 
 SUPABASE_URL = os.environ["SUPABASE_URL"]
 SUPABASE_KEY = os.environ["SUPABASE_KEY"]
@@ -22,19 +20,9 @@ supabase = create_client(
 
 print("Supabase conectado.")
 
-# =========================
-# OPENAI
-# =========================
-
-client = OpenAI(
-    api_key=os.environ["OPENAI_API_KEY"]
-)
-
-print("OpenAI conectada.")
-
-# =========================
+# =========================================
 # IA LOCAL GRATUITA
-# =========================
+# =========================================
 
 def analisar_artigo(titulo):
 
@@ -44,9 +32,9 @@ def analisar_artigo(titulo):
 
     categoria = "Ciência da Informação"
 
-    # ====================
+    # =====================================
     # TAGS
-    # ====================
+    # =====================================
 
     if "memória" in texto:
         tags.append("Memória")
@@ -69,14 +57,30 @@ def analisar_artigo(titulo):
     if "arquivo" in texto:
         tags.append("Arquivos")
 
+    if "arquiv" in texto:
+        tags.append("Arquivologia")
+
     if "biblioteca" in texto:
         tags.append("Bibliotecas")
 
-    # ====================
-    # CATEGORIAS
-    # ====================
+    if "bibliometr" in texto:
+        tags.append("Bibliometria")
 
-    if "algoritmo" in texto or "ia" in texto:
+    if "digital" in texto:
+        tags.append("Transformação Digital")
+
+    if "gestão documental" in texto:
+        tags.append("Gestão Documental")
+
+    # =====================================
+    # CATEGORIAS
+    # =====================================
+
+    if (
+        "algoritmo" in texto
+        or "ia" in texto
+        or "digital" in texto
+    ):
         categoria = "Tecnologias da Informação"
 
     elif "preservação" in texto:
@@ -87,6 +91,12 @@ def analisar_artigo(titulo):
 
     elif "desinformação" in texto:
         categoria = "Políticas de Informação"
+
+    elif "arquiv" in texto:
+        categoria = "Arquivologia"
+
+    elif "biblioteca" in texto:
+        categoria = "Biblioteconomia"
 
     resumo = (
         "Artigo monitorado automaticamente "
@@ -113,9 +123,27 @@ def analisar_artigo(titulo):
             tags
     }
 
-# =========================
+# =========================================
+# FILTROS DE LIMPEZA
+# =========================================
+
+PALAVRAS_BLOQUEADAS = [
+
+    "expediente",
+    "editorial",
+    "sumário",
+    "sumario",
+    "apresentação",
+    "apresentacao",
+    "errata",
+    "prefácio",
+    "prefacio"
+
+]
+
+# =========================================
 # RSS
-# =========================
+# =========================================
 
 for fonte in FONTES:
 
@@ -133,33 +161,105 @@ for fonte in FONTES:
         f"{len(feed.entries)}"
     )
 
-    # =========================
+    # =====================================
     # PROCESSAMENTO
-    # =========================
+    # =====================================
 
-    for entry in feed.entries[:5]:
+    for entry in feed.entries[:10]:
 
         print("\n-------------------")
         print("Processando artigo")
 
-        titulo = entry.title
+        titulo = entry.title.strip()
+
+        # =================================
+        # FILTRO DE LIMPEZA
+        # =================================
+
+        titulo_lower = titulo.lower()
+
+        ignorar = any(
+            palavra in titulo_lower
+            for palavra in PALAVRAS_BLOQUEADAS
+        )
+
+        if ignorar:
+
+            print(
+                f"Ignorado: {titulo}"
+            )
+
+            continue
+
+        # =================================
+        # LINK
+        # =================================
+
         link = entry.link
 
-        print(f"Título: {titulo}")
+        # =================================
+        # AUTORES
+        # =================================
+
+        autores = None
+
+        if "authors" in entry:
+
+            autores = ", ".join(
+                autor.name
+                for autor in entry.authors
+            )
+
+        # =================================
+        # RESUMO RSS
+        # =================================
+
+        resumo = None
+
+        if "summary" in entry:
+
+            resumo = (
+                entry.summary
+                .replace("\n", " ")
+                .replace("\r", " ")
+            )
+
+        # =================================
+        # DATA
+        # =================================
+
+        publicado_em = None
+
+        if "published" in entry:
+
+            publicado_em = entry.published
+
+        # =================================
+        # IA LOCAL
+        # =================================
 
         ia = analisar_artigo(titulo)
 
+        # =================================
+        # ARTIGO
+        # =================================
+
         artigo = {
 
-            "titulo": titulo,
+            "titulo":
+                titulo,
 
-            "link": link,
+            "autores":
+                autores,
+
+            "resumo":
+                resumo,
+
+            "link":
+                link,
 
             "revista":
                 fonte["revista"],
-
-            "categoria":
-                fonte["area"],
 
             "descricao_curta":
                 ia["descricao_curta"],
@@ -174,144 +274,32 @@ for fonte in FONTES:
                 ia["tags_ia"],
 
             "publicado_em":
-                None
+                publicado_em
         }
+
+        # =================================
+        # UPSERT
+        # =================================
 
         try:
 
-            supabase.table("articles").upsert(
+            supabase.table(
+                "articles"
+            ).upsert(
                 artigo,
                 on_conflict="link"
             ).execute()
 
-            print("Artigo salvo.")
+            print(
+                f"Artigo salvo: {titulo}"
+            )
 
         except Exception as erro:
 
-            print("Erro Supabase:")
+            print(
+                "Erro Supabase:"
+            )
+
             print(erro)
-
-# =========================
-# PROCESSAMENTO
-# =========================
-
-for entry in feed.entries[:5]:
-
-    print("\n-------------------")
-    print("Processando artigo")
-
-    titulo = entry.title
-    link = entry.link
-
-    print(f"Título: {titulo}")
-
-    # =========================
-    # IA
-    # =========================
-
-    prompt = f"""
-Você é um especialista em Ciência da Informação,
-Arquivologia e Biblioteconomia.
-
-Analise o título abaixo e responda APENAS
-em JSON válido.
-
-Título:
-{titulo}
-
-Formato obrigatório:
-
-{{
-  "descricao_curta": "...",
-  "resumo_ia": "...",
-  "categoria": "...",
-  "tags_ia": ["...", "...", "..."]
-}}
-"""
-
-    try:
-
-        resposta = client.chat.completions.create(
-            model="gpt-4.1-mini",
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ]
-        )
-
-        conteudo = (
-            resposta
-            .choices[0]
-            .message
-            .content
-        )
-
-        ia = json.loads(conteudo)
-
-        print("IA processada.")
-
-    except Exception as erro:
-
-        print("Erro IA:")
-        print(erro)
-
-        ia = {
-            "descricao_curta": None,
-            "resumo_ia": None,
-            "categoria": None,
-            "tags_ia": []
-        }
-
-    # =========================
-    # ARTIGO
-    # =========================
-
-    artigo = {
-
-        "titulo": titulo,
-
-        "link": link,
-
-        "revista":
-            fonte["revista"],
-
-        "categoria":
-            fonte["area"],
-
-        "descricao_curta":
-            ia["descricao_curta"],
-
-        "resumo_ia":
-            ia["resumo_ia"],
-
-        "categoria":
-            ia["categoria"],
-
-        "tags_ia":
-            ia["tags_ia"],
-
-        "publicado_em":
-            None
-    }
-
-    # =========================
-    # SUPABASE INSERT
-    # =========================
-
-    try:
-
-        supabase.table("articles").upsert(
-            artigo,
-            on_conflict="link"
-        ).execute()
-
-        print("Artigo salvo.")
-
-    except Exception as erro:
-
-        print("Erro Supabase:")
-        print(erro)
 
 print("\nArquivIA finalizado.")
