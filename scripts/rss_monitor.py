@@ -41,6 +41,8 @@ for fonte in FONTES:
     print("\n======================")
     print(f"Fonte: {fonte['revista']}")
 
+    print("Lendo RSS...")
+
     feed = feedparser.parse(
         fonte["rss"]
     )
@@ -50,13 +52,63 @@ for fonte in FONTES:
         f"{len(feed.entries)}"
     )
 
+    # =========================
+    # PROCESSAMENTO
+    # =========================
+
     for entry in feed.entries[:5]:
 
-print("Lendo RSS...")
+        print("\n-------------------")
+        print("Processando artigo")
 
-feed = feedparser.parse(rss_url)
+        titulo = entry.title
+        link = entry.link
 
-print(f"Entradas encontradas: {len(feed.entries)}")
+        print(f"Título: {titulo}")
+
+        ia = analisar_artigo(titulo)
+
+        artigo = {
+
+            "titulo": titulo,
+
+            "link": link,
+
+            "revista":
+                fonte["revista"],
+
+            "categoria":
+                fonte["area"],
+
+            "descricao_curta":
+                ia["descricao_curta"],
+
+            "resumo_ia":
+                ia["resumo_ia"],
+
+            "categoria":
+                ia["categoria"],
+
+            "tags_ia":
+                ia["tags_ia"],
+
+            "publicado_em":
+                None
+        }
+
+        try:
+
+            supabase.table("articles").upsert(
+                artigo,
+                on_conflict="link"
+            ).execute()
+
+            print("Artigo salvo.")
+
+        except Exception as erro:
+
+            print("Erro Supabase:")
+            print(erro)
 
 # =========================
 # PROCESSAMENTO
