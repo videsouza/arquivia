@@ -157,6 +157,11 @@
       background: #1d4ed8;
     }
 
+    .tag {
+      background: #ecfeff;
+      color: #155e75;
+    }
+
     footer {
       margin-top: 80px;
       text-align: center;
@@ -284,14 +289,12 @@
           <div class="article-meta">
 
             <div class="badge">
-              ${artigo.revista}
+            ${artigo.revista}
             </div>
 
-            <div class="badge">
-              Artigo científico
-            </div>
+        ${renderizarTags(artigo.tags_ia)}
 
-          </div>
+</div>
 
           <a
   class="article-link"
@@ -325,6 +328,20 @@
 
       });
 
+  function renderizarTags(tags) {
+
+  if (!tags || tags.length === 0) {
+    return "";
+  }
+
+  return tags.map(tag => `
+    <div class="badge tag">
+      ${tag}
+    </div>
+  `).join("");
+
+}
+    
     carregar();
 
   </script>
