@@ -12,139 +12,146 @@
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
 
-  <style>
+<style>
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-    body {
-      font-family: "Inter", sans-serif;
-      background: #0f1117;
-      color: #f5f5f5;
-      min-height: 100vh;
-      padding: 40px 20px;
-    }
+body {
+  font-family: "Inter", sans-serif;
+  background: #f7f7f5;
+  color: #1f2937;
+  min-height: 100vh;
+  padding: 40px 20px;
+}
 
-    .container {
-      max-width: 1000px;
-      margin: auto;
-    }
+.container {
+  max-width: 960px;
+  margin: auto;
+}
 
-    header {
-      margin-bottom: 40px;
-    }
+header {
+  margin-bottom: 50px;
+}
 
-    h1 {
-      font-size: 48px;
-      margin-bottom: 10px;
-      font-weight: 700;
-      letter-spacing: -2px;
-    }
+h1 {
+  font-size: 52px;
+  font-weight: 700;
+  letter-spacing: -2px;
+  margin-bottom: 12px;
+  color: #111827;
+}
 
-    .subtitle {
-      color: #9aa4b2;
-      font-size: 18px;
-      line-height: 1.6;
-      max-width: 700px;
-    }
+.subtitle {
+  font-size: 18px;
+  color: #4b5563;
+  line-height: 1.7;
+  max-width: 760px;
+}
 
-    .stats {
-      margin-top: 20px;
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
+.stats {
+  display: flex;
+  gap: 18px;
+  margin-top: 28px;
+  flex-wrap: wrap;
+}
 
-    .stat-box {
-      background: #181c25;
-      border: 1px solid #232938;
-      padding: 16px 20px;
-      border-radius: 14px;
-      min-width: 160px;
-    }
+.stat-box {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 18px 22px;
+  min-width: 180px;
+}
 
-    .stat-number {
-      font-size: 28px;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
+.stat-number {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+}
 
-    .stat-label {
-      color: #9aa4b2;
-      font-size: 14px;
-    }
+.stat-label {
+  margin-top: 4px;
+  color: #6b7280;
+  font-size: 14px;
+}
 
-    .articles {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
+.articles {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
 
-    .card {
-      background: #181c25;
-      border: 1px solid #232938;
-      border-radius: 18px;
-      padding: 24px;
-      transition: 0.2s ease;
-    }
+.card {
+  background: white;
+  border-radius: 18px;
+  padding: 28px;
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
+}
 
-    .card:hover {
-      transform: translateY(-4px);
-      border-color: #3b82f6;
-    }
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
 
-    .article-title {
-      font-size: 22px;
-      font-weight: 600;
-      line-height: 1.4;
-      margin-bottom: 12px;
-    }
+.article-title {
+  font-size: 24px;
+  line-height: 1.5;
+  font-weight: 600;
+  margin-bottom: 14px;
+  color: #111827;
+}
 
-    .article-meta {
-      color: #9aa4b2;
-      font-size: 14px;
-      margin-bottom: 18px;
-    }
+.article-meta {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 20px;
+}
 
-    .article-link {
-      display: inline-block;
-      text-decoration: none;
-      color: white;
-      background: #2563eb;
-      padding: 10px 16px;
-      border-radius: 10px;
-      transition: 0.2s ease;
-      font-size: 14px;
-      font-weight: 500;
-    }
+.article-link {
+  display: inline-block;
+  text-decoration: none;
+  background: #2563eb;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
 
-    .article-link:hover {
-      background: #3b82f6;
-    }
+.article-link:hover {
+  background: #1d4ed8;
+}
 
-    footer {
-      margin-top: 60px;
-      color: #667085;
-      font-size: 14px;
-      text-align: center;
-    }
+footer {
+  margin-top: 70px;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 14px;
+}
 
-    @media (max-width: 700px) {
+@media (max-width: 700px) {
 
-      h1 {
-        font-size: 36px;
-      }
+  body {
+    padding: 24px 14px;
+  }
 
-      .article-title {
-        font-size: 18px;
-      }
+  h1 {
+    font-size: 38px;
+  }
 
-    }
+  .article-title {
+    font-size: 20px;
+  }
 
-  </style>
+}
+
+</style>
 </head>
 
 <body>
