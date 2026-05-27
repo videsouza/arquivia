@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>ArquivIA</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+
+    h1 {
+      color: #222;
+    }
+
+    .card {
+      background: white;
+      padding: 16px;
+      margin-bottom: 16px;
+      border-radius: 10px;
+    }
+
+    a {
+      text-decoration: none;
+      color: #0066cc;
+    }
+
+    .revista {
+      color: #666;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>ArquivIA</h1>
+<p>Monitor científico em Arquivologia, Biblioteconomia e Ciência da Informação.</p>
+
+<div id="artigos"></div>
+
+<script>
+
+const API =
+"https://mrshdawrgydietjhxixn.supabase.co/rest/v1/articles?select=*";
+
+const APIKEY =
+"SUA_ANON_KEY";
+
+async function carregar() {
+
+  const resposta = await fetch(API, {
+    headers: {
+      apikey: APIKEY
+    }
+  });
+
+  const dados = await resposta.json();
+
+  const container = document.getElementById("artigos");
+
+  dados.forEach(artigo => {
+
+    const div = document.createElement("div");
+    div.className = "card";
+
+    div.innerHTML = `
+      <h3>${artigo.titulo}</h3>
+
+      <div class="revista">
+        ${artigo.revista}
+      </div>
+
+      <br>
+
+      <a href="${artigo.link}" target="_blank">
+        Ler artigo
+      </a>
+    `;
+
+    container.appendChild(div);
+
+  });
+
+}
+
+carregar();
+
+</script>
+
+</body>
+</html>
