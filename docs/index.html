@@ -172,6 +172,13 @@
       color: #155e75;
   }
 
+    .article-date {
+  font-size: 14px;
+  color: #6b7280;
+  margin-top: 8px;
+  margin-bottom: 16px;
+}
+
     footer {
       margin-top: 80px;
       text-align: center;
@@ -278,6 +285,24 @@
 
     }
 
+    function formatarData(data) {
+
+  if (!data) {
+    return "Data desconhecida";
+  }
+
+  return new Date(data)
+    .toLocaleDateString(
+      "pt-BR",
+      {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
+      }
+    );
+
+}
+
     function renderizar(lista) {
 
       const container =
@@ -295,6 +320,9 @@
           <div class="article-title">
             ${artigo.titulo}
           </div>
+          <div class="article-date">
+  ${formatarData(artigo.publicado_em)}
+</div>
 
           <div class="article-meta">
 
