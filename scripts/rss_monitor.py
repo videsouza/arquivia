@@ -33,6 +33,87 @@ client = OpenAI(
 print("OpenAI conectada.")
 
 # =========================
+# IA LOCAL GRATUITA
+# =========================
+
+def analisar_artigo(titulo):
+
+    texto = titulo.lower()
+
+    tags = []
+
+    categoria = "Ciência da Informação"
+
+    # ====================
+    # TAGS
+    # ====================
+
+    if "memória" in texto:
+        tags.append("Memória")
+
+    if "algoritmo" in texto:
+        tags.append("Algoritmos")
+
+    if "ia" in texto:
+        tags.append("Inteligência Artificial")
+
+    if "preservação" in texto:
+        tags.append("Preservação Digital")
+
+    if "desinformação" in texto:
+        tags.append("Desinformação")
+
+    if "tesauro" in texto:
+        tags.append("Tesauros")
+
+    if "arquivo" in texto:
+        tags.append("Arquivos")
+
+    if "biblioteca" in texto:
+        tags.append("Bibliotecas")
+
+    # ====================
+    # CATEGORIAS
+    # ====================
+
+    if "algoritmo" in texto or "ia" in texto:
+        categoria = "Tecnologias da Informação"
+
+    elif "preservação" in texto:
+        categoria = "Preservação Digital"
+
+    elif "tesauro" in texto:
+        categoria = "Representação da Informação"
+
+    elif "desinformação" in texto:
+        categoria = "Políticas de Informação"
+
+    resumo = (
+        "Artigo monitorado automaticamente "
+        "pelo ArquivIA."
+    )
+
+    descricao = (
+        "Pesquisa em "
+        + categoria
+    )
+
+    return {
+
+        "descricao_curta":
+            descricao,
+
+        "resumo_ia":
+            resumo,
+
+        "categoria":
+            categoria,
+
+        "tags_ia":
+            tags
+    }
+
+# =========================
 # RSS
 # =========================
 
