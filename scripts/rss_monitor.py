@@ -4,6 +4,7 @@ import feedparser
 
 from supabase import create_client
 from openai import OpenAI
+from sources import FONTES
 
 print("Iniciando ArquivIA...")
 
@@ -35,10 +36,21 @@ print("OpenAI conectada.")
 # RSS
 # =========================
 
-rss_url = (
-    "https://periodicos.ufmg.br/index.php/pci/"
-    "gateway/plugin/WebFeedGatewayPlugin/rss2"
-)
+for fonte in FONTES:
+
+    print("\n======================")
+    print(f"Fonte: {fonte['revista']}")
+
+    feed = feedparser.parse(
+        fonte["rss"]
+    )
+
+    print(
+        f"Entradas encontradas: "
+        f"{len(feed.entries)}"
+    )
+
+    for entry in feed.entries[:5]:
 
 print("Lendo RSS...")
 
@@ -130,7 +142,10 @@ Formato obrigatório:
         "link": link,
 
         "revista":
-            "Perspectivas em Ciência da Informação",
+            fonte["revista"],
+
+        "categoria":
+            fonte["area"],
 
         "descricao_curta":
             ia["descricao_curta"],
