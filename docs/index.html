@@ -1,95 +1,247 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
   <title>ArquivIA</title>
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+
   <style>
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial;
-      max-width: 900px;
-      margin: 40px auto;
-      padding: 20px;
-      background: #f5f5f5;
+      font-family: "Inter", sans-serif;
+      background: #0f1117;
+      color: #f5f5f5;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    header {
+      margin-bottom: 40px;
     }
 
     h1 {
-      color: #222;
+      font-size: 48px;
+      margin-bottom: 10px;
+      font-weight: 700;
+      letter-spacing: -2px;
+    }
+
+    .subtitle {
+      color: #9aa4b2;
+      font-size: 18px;
+      line-height: 1.6;
+      max-width: 700px;
+    }
+
+    .stats {
+      margin-top: 20px;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .stat-box {
+      background: #181c25;
+      border: 1px solid #232938;
+      padding: 16px 20px;
+      border-radius: 14px;
+      min-width: 160px;
+    }
+
+    .stat-number {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      color: #9aa4b2;
+      font-size: 14px;
+    }
+
+    .articles {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
     }
 
     .card {
-      background: white;
-      padding: 16px;
-      margin-bottom: 16px;
-      border-radius: 10px;
+      background: #181c25;
+      border: 1px solid #232938;
+      border-radius: 18px;
+      padding: 24px;
+      transition: 0.2s ease;
     }
 
-    a {
-      text-decoration: none;
-      color: #0066cc;
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: #3b82f6;
     }
 
-    .revista {
-      color: #666;
+    .article-title {
+      font-size: 22px;
+      font-weight: 600;
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+
+    .article-meta {
+      color: #9aa4b2;
       font-size: 14px;
+      margin-bottom: 18px;
     }
+
+    .article-link {
+      display: inline-block;
+      text-decoration: none;
+      color: white;
+      background: #2563eb;
+      padding: 10px 16px;
+      border-radius: 10px;
+      transition: 0.2s ease;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .article-link:hover {
+      background: #3b82f6;
+    }
+
+    footer {
+      margin-top: 60px;
+      color: #667085;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    @media (max-width: 700px) {
+
+      h1 {
+        font-size: 36px;
+      }
+
+      .article-title {
+        font-size: 18px;
+      }
+
+    }
+
   </style>
 </head>
+
 <body>
 
-<h1>ArquivIA</h1>
-<p>Monitor científico em Arquivologia, Biblioteconomia e Ciência da Informação.</p>
+  <div class="container">
 
-<div id="artigos"></div>
+    <header>
 
-<script>
+      <h1>ArquivIA</h1>
 
-const API =
-"https://mrshdawrgydietjhxixn.supabase.co/rest/v1/articles?select=*&order=criado_em.desc";
+      <p class="subtitle">
+        Plataforma de monitoramento científico em Arquivologia,
+        Biblioteconomia e Ciência da Informação.
+      </p>
 
-const APIKEY =
-"sb_publishable_Wbv87CIIGPWJu-uSy2PvZg_sX9TU9vE";
+      <div class="stats">
 
-async function carregar() {
+        <div class="stat-box">
+          <div class="stat-number" id="total-artigos">0</div>
+          <div class="stat-label">Artigos monitorados</div>
+        </div>
 
-  const resposta = await fetch(API, {
-    headers: {
-      apikey: APIKEY
-    }
-  });
+        <div class="stat-box">
+          <div class="stat-number">24h</div>
+          <div class="stat-label">Atualização automática</div>
+        </div>
 
-  const dados = await resposta.json();
-
-  const container = document.getElementById("artigos");
-
-  dados.forEach(artigo => {
-
-    const div = document.createElement("div");
-    div.className = "card";
-
-    div.innerHTML = `
-      <h3>${artigo.titulo}</h3>
-
-      <div class="revista">
-        ${artigo.revista}
       </div>
 
-      <br>
+    </header>
 
-      <a href="${artigo.link}" target="_blank">
-        Ler artigo
-      </a>
-    `;
+    <main class="articles" id="artigos"></main>
 
-    container.appendChild(div);
+    <footer>
+      ArquivIA · Observatório Científico
+    </footer>
 
-  });
+  </div>
 
-}
+  <script>
 
-carregar();
+    const API =
+      "https://mrshdawrgydietjhxixn.supabase.co/rest/v1/articles?select=*&order=criado_em.desc";
 
-</script>
+    const APIKEY =
+      "sb_publishable_Wbv87CIIGPWJu-uSy2PvZg_sX9TU9vE";
+
+    async function carregar() {
+
+      const resposta = await fetch(API, {
+        headers: {
+          apikey: APIKEY
+        }
+      });
+
+      const dados = await resposta.json();
+
+      document.getElementById("total-artigos").innerText =
+        dados.length;
+
+      const container =
+        document.getElementById("artigos");
+
+      dados.forEach(artigo => {
+
+        const div = document.createElement("div");
+
+        div.className = "card";
+
+        div.innerHTML = `
+          <div class="article-title">
+            ${artigo.titulo}
+          </div>
+
+          <div class="article-meta">
+            ${artigo.revista}
+          </div>
+
+          <a
+            class="article-link"
+            href="${artigo.link}"
+            target="_blank"
+          >
+            Ler artigo
+          </a>
+        `;
+
+        container.appendChild(div);
+
+      });
+
+    }
+
+    carregar();
+
+  </script>
 
 </body>
+
 </html>
