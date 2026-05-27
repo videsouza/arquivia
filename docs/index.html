@@ -10,148 +10,182 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-<style>
+  <style>
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-body {
-  font-family: "Inter", sans-serif;
-  background: #f7f7f5;
-  color: #1f2937;
-  min-height: 100vh;
-  padding: 40px 20px;
-}
+    body {
+      font-family: "Inter", sans-serif;
+      background: #f7f7f5;
+      color: #1f2937;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
 
-.container {
-  max-width: 960px;
-  margin: auto;
-}
+    .container {
+      max-width: 980px;
+      margin: auto;
+    }
 
-header {
-  margin-bottom: 50px;
-}
+    header {
+      margin-bottom: 50px;
+    }
 
-h1 {
-  font-size: 52px;
-  font-weight: 700;
-  letter-spacing: -2px;
-  margin-bottom: 12px;
-  color: #111827;
-}
+    h1 {
+      font-size: 56px;
+      font-weight: 700;
+      letter-spacing: -2px;
+      color: #111827;
+      margin-bottom: 12px;
+    }
 
-.subtitle {
-  font-size: 18px;
-  color: #4b5563;
-  line-height: 1.7;
-  max-width: 760px;
-}
+    .subtitle {
+      font-size: 18px;
+      line-height: 1.7;
+      color: #4b5563;
+      max-width: 760px;
+    }
 
-.stats {
-  display: flex;
-  gap: 18px;
-  margin-top: 28px;
-  flex-wrap: wrap;
-}
+    .stats {
+      display: flex;
+      gap: 18px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
 
-.stat-box {
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 14px;
-  padding: 18px 22px;
-  min-width: 180px;
-}
+    .stat-box {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 18px 22px;
+      min-width: 180px;
+    }
 
-.stat-number {
-  font-size: 28px;
-  font-weight: 700;
-  color: #111827;
-}
+    .stat-number {
+      font-size: 30px;
+      font-weight: 700;
+    }
 
-.stat-label {
-  margin-top: 4px;
-  color: #6b7280;
-  font-size: 14px;
-}
+    .stat-label {
+      margin-top: 4px;
+      color: #6b7280;
+      font-size: 14px;
+    }
 
-.articles {
-  display: flex;
-  flex-direction: column;
-  gap: 22px;
-}
+    .search-container {
+      margin-bottom: 35px;
+    }
 
-.card {
-  background: white;
-  border-radius: 18px;
-  padding: 28px;
-  border: 1px solid #e5e7eb;
-  transition: all 0.2s ease;
-}
+    .search-input {
+      width: 100%;
+      padding: 18px 20px;
+      border-radius: 16px;
+      border: 1px solid #d1d5db;
+      background: white;
+      font-size: 16px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
 
-.card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-}
+    .search-input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37,99,235,0.08);
+    }
 
-.article-title {
-  font-size: 24px;
-  line-height: 1.5;
-  font-weight: 600;
-  margin-bottom: 14px;
-  color: #111827;
-}
+    .articles {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
 
-.article-meta {
-  font-size: 14px;
-  color: #6b7280;
-  margin-bottom: 20px;
-}
+    .card {
+      background: white;
+      border-radius: 20px;
+      border: 1px solid #e5e7eb;
+      padding: 30px;
+      transition: all 0.25s ease;
+    }
 
-.article-link {
-  display: inline-block;
-  text-decoration: none;
-  background: #2563eb;
-  color: white;
-  padding: 10px 18px;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 500;
-  transition: background 0.2s ease;
-}
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.07);
+    }
 
-.article-link:hover {
-  background: #1d4ed8;
-}
+    .article-title {
+      font-size: 24px;
+      line-height: 1.5;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #111827;
+    }
 
-footer {
-  margin-top: 70px;
-  text-align: center;
-  color: #9ca3af;
-  font-size: 14px;
-}
+    .article-meta {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
 
-@media (max-width: 700px) {
+    .badge {
+      background: #eef2ff;
+      color: #3730a3;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+    }
 
-  body {
-    padding: 24px 14px;
-  }
+    .article-link {
+      display: inline-block;
+      text-decoration: none;
+      background: #2563eb;
+      color: white;
+      padding: 11px 18px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
 
-  h1 {
-    font-size: 38px;
-  }
+    .article-link:hover {
+      background: #1d4ed8;
+    }
 
-  .article-title {
-    font-size: 20px;
-  }
+    footer {
+      margin-top: 80px;
+      text-align: center;
+      color: #9ca3af;
+      font-size: 14px;
+    }
 
-}
+    @media (max-width: 700px) {
 
-</style>
+      body {
+        padding: 24px 14px;
+      }
+
+      h1 {
+        font-size: 40px;
+      }
+
+      .article-title {
+        font-size: 20px;
+      }
+
+      .card {
+        padding: 22px;
+      }
+
+    }
+
+  </style>
+
 </head>
 
 <body>
@@ -163,7 +197,7 @@ footer {
       <h1>ArquivIA</h1>
 
       <p class="subtitle">
-        Plataforma de monitoramento científico em Arquivologia,
+        Observatório científico em Arquivologia,
         Biblioteconomia e Ciência da Informação.
       </p>
 
@@ -175,18 +209,27 @@ footer {
         </div>
 
         <div class="stat-box">
-          <div class="stat-number">24h</div>
-          <div class="stat-label">Atualização automática</div>
+          <div class="stat-number">Automático</div>
+          <div class="stat-label">Monitoramento contínuo</div>
         </div>
 
       </div>
 
     </header>
 
+    <div class="search-container">
+      <input
+        type="text"
+        class="search-input"
+        id="busca"
+        placeholder="Pesquisar artigos..."
+      >
+    </div>
+
     <main class="articles" id="artigos"></main>
 
     <footer>
-      ArquivIA · Observatório Científico
+      © 2026 Vinícius A. de Souza · ArquivIA · Plataforma de Inteligência Científica
     </footer>
 
   </div>
@@ -199,6 +242,8 @@ footer {
     const APIKEY =
       "sb_publishable_Wbv87CIIGPWJu-uSy2PvZg_sX9TU9vE";
 
+    let artigosGlobais = [];
+
     async function carregar() {
 
       const resposta = await fetch(API, {
@@ -209,13 +254,23 @@ footer {
 
       const dados = await resposta.json();
 
+      artigosGlobais = dados;
+
       document.getElementById("total-artigos").innerText =
         dados.length;
+
+      renderizar(dados);
+
+    }
+
+    function renderizar(lista) {
 
       const container =
         document.getElementById("artigos");
 
-      dados.forEach(artigo => {
+      container.innerHTML = "";
+
+      lista.forEach(artigo => {
 
         const div = document.createElement("div");
 
@@ -227,7 +282,15 @@ footer {
           </div>
 
           <div class="article-meta">
-            ${artigo.revista}
+
+            <div class="badge">
+              ${artigo.revista}
+            </div>
+
+            <div class="badge">
+              Artigo científico
+            </div>
+
           </div>
 
           <a
@@ -235,7 +298,7 @@ footer {
             href="${artigo.link}"
             target="_blank"
           >
-            Ler artigo
+            Ler publicação
           </a>
         `;
 
@@ -244,6 +307,24 @@ footer {
       });
 
     }
+
+    document
+      .getElementById("busca")
+      .addEventListener("input", (e) => {
+
+        const termo =
+          e.target.value.toLowerCase();
+
+        const filtrados =
+          artigosGlobais.filter(artigo =>
+            artigo.titulo
+              .toLowerCase()
+              .includes(termo)
+          );
+
+        renderizar(filtrados);
+
+      });
 
     carregar();
 
