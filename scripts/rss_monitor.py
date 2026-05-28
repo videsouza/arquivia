@@ -1,4 +1,5 @@
 import os
+import re
 import feedparser
 
 from supabase import create_client
@@ -21,7 +22,7 @@ supabase = create_client(
 print("Supabase conectado.")
 
 # =========================================
-# IA LOCAL GRATUITA
+# IA LOCAL
 # =========================================
 
 def analisar_artigo(titulo):
@@ -54,10 +55,7 @@ def analisar_artigo(titulo):
     if "tesauro" in texto:
         tags.append("Tesauros")
 
-    if "arquivo" in texto:
-        tags.append("Arquivos")
-
-    if "arquiv" in texto:
+    if "arquivo" in texto or "arquiv" in texto:
         tags.append("Arquivologia")
 
     if "biblioteca" in texto:
@@ -73,7 +71,7 @@ def analisar_artigo(titulo):
         tags.append("Gestão Documental")
 
     # =====================================
-    # CATEGORIAS
+    # CATEGORIA
     # =====================================
 
     if (
@@ -81,21 +79,27 @@ def analisar_artigo(titulo):
         or "ia" in texto
         or "digital" in texto
     ):
+
         categoria = "Tecnologias da Informação"
 
     elif "preservação" in texto:
+
         categoria = "Preservação Digital"
 
     elif "tesauro" in texto:
+
         categoria = "Representação da Informação"
 
     elif "desinformação" in texto:
+
         categoria = "Políticas de Informação"
 
     elif "arquiv" in texto:
+
         categoria = "Arquivologia"
 
     elif "biblioteca" in texto:
+
         categoria = "Biblioteconomia"
 
     resumo = (
@@ -124,7 +128,93 @@ def analisar_artigo(titulo):
     }
 
 # =========================================
-# FILTROS DE LIMPEZA
+# EXTRAÇÃO DE EDIÇÃO
+# =========================================
+
+def extrair_edicao(texto):
+
+    volume = None
+    numero = None
+    ano = None
+    edicao = None
+
+    if not texto:
+        return {
+            "volume": None,
+            "numero": None,
+            "ano": None,
+            "edicao": None
+        }
+
+    texto = texto.lower()
+
+    # =====================================
+    # REGEX PRINCIPAL
+    # =====================================
+
+    match = re.search(
+
+        r'v\.?\s*(\d+)'
+        r'.*?n\.?\s*(\d+)'
+        r'.*?(\d{4})',
+
+        texto
+
+    )
+
+    if match:
+
+        volume = match.group(1)
+        numero = match.group(2)
+        ano = match.group(3)
+
+    else:
+
+        # =================================
+        # TENTA PEGAR APENAS ANO
+        # =================================
+
+        ano_match = re.search(
+            r'(\d{4})',
+            texto
+        )
+
+        if ano_match:
+
+            ano = ano_match.group(1)
+
+    # =====================================
+    # EDIÇÃO HUMANA
+    # =====================================
+
+    partes = []
+
+    if volume:
+        partes.append(f"v.{volume}")
+
+    if numero:
+        partes.append(f"n.{numero}")
+
+    if ano:
+        partes.append(f"({ano})")
+
+    if partes:
+
+        edicao = " ".join(partes)
+
+    return {
+
+        "volume": volume,
+
+        "numero": numero,
+
+        "ano": ano,
+
+        "edicao": edicao
+    }
+
+# =========================================
+# FILTROS
 # =========================================
 
 PALAVRAS_BLOQUEADAS = [
@@ -165,18 +255,18 @@ for fonte in FONTES:
     # PROCESSAMENTO
     # =====================================
 
-    for entry in feed.entries[:10]:
+    for entry in feed.entries[:15]:
 
         print("\n-------------------")
         print("Processando artigo")
 
         titulo = entry.title.strip()
 
-        # =================================
-        # FILTRO DE LIMPEZA
-        # =================================
-
         titulo_lower = titulo.lower()
+
+        # =================================
+        # FILTRO
+        # =================================
 
         ignorar = any(
             palavra in titulo_lower
@@ -185,11 +275,11 @@ for fonte in FONTES:
 
         if ignorar:
 
-            print(
-                f"Ignorado: {titulo}"
-            )
+            print(f"Ignorado: {titulo}")
 
             continue
+
+        print(f"Título: {titulo}")
 
         # =================================
         # LINK
@@ -211,7 +301,7 @@ for fonte in FONTES:
             )
 
         # =================================
-        # RESUMO RSS
+        # RESUMO
         # =================================
 
         resumo = None
@@ -235,13 +325,45 @@ for fonte in FONTES:
             publicado_em = entry.published
 
         # =================================
+        # TEXTO DA EDIÇÃO
+        # =================================
+
+        texto_edicao = ""
+
+        if "tags" in entry:
+
+            for tag in entry.tags:
+
+                if hasattr(tag, "term"):
+
+                    texto_edicao += (
+                        " "
+                        + tag.term
+                    )
+
+        if "summary" in entry:
+
+            texto_edicao += (
+                " "
+                + entry.summary
+            )
+
+        # =================================
+        # EXTRAIR EDIÇÃO
+        # =================================
+
+        dados_edicao = extrair_edicao(
+            texto_edicao
+        )
+
+        # =================================
         # IA LOCAL
         # =================================
 
         ia = analisar_artigo(titulo)
 
         # =================================
-        # ARTIGO
+        # OBJETO
         # =================================
 
         artigo = {
@@ -274,11 +396,23 @@ for fonte in FONTES:
                 ia["tags_ia"],
 
             "publicado_em":
-                publicado_em
+                publicado_em,
+
+            "volume":
+                dados_edicao["volume"],
+
+            "numero":
+                dados_edicao["numero"],
+
+            "ano":
+                dados_edicao["ano"],
+
+            "edicao":
+                dados_edicao["edicao"]
         }
 
         # =================================
-        # UPSERT
+        # SALVAR
         # =================================
 
         try:
@@ -291,15 +425,17 @@ for fonte in FONTES:
             ).execute()
 
             print(
-                f"Artigo salvo: {titulo}"
+                "Artigo salvo:"
+            )
+
+            print(
+                f"Edição: "
+                f"{dados_edicao['edicao']}"
             )
 
         except Exception as erro:
 
-            print(
-                "Erro Supabase:"
-            )
-
+            print("Erro Supabase:")
             print(erro)
 
 print("\nArquivIA finalizado.")
