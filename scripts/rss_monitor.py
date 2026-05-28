@@ -469,4 +469,3 @@ for fonte in FONTES:
             print(erro)
 
 print("\nArquivIA finalizado.")
-```
