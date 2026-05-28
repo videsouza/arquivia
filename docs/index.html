@@ -511,433 +511,115 @@
 
   <section id="articles"></section>
 
-  <script>
+const API =
+  "https://mrshdawrgydietjhxixn.supabase.co/rest/v1/articles"
 
-    const API =
-      "https://mrshdawrgydietjhxixn.supabase.co/rest/v1/articles?select=*";
+const API_KEY =
+  "sb_publishable_Wbv87CIIGPWJu-uSy2PvZg_sX9TU9vE"
 
-    const APIKEY =
-      "sb_publishable_Wbv87CIIGPWJu-uSy2PvZg_sX9TU9vE";
+async function carregarRevistas() {
 
-    let artigosGlobais = [];
-    let artigosFiltrados = [];
+  const resposta = await fetch(API, {
 
-    // =====================================
-    // FORMATAR DATA
-    // =====================================
+    headers: {
 
-    function formatarData(data) {
+      apikey: API_KEY,
 
-      if (!data) {
-        return "Data desconhecida";
-      }
-
-      return new Date(data)
-        .toLocaleDateString(
-          "pt-BR",
-          {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric"
-          }
-        );
+      Authorization:
+        `Bearer ${API_KEY}`
 
     }
 
-    // =====================================
-    // DASHBOARD
-    // =====================================
+  })
 
-    function atualizarDashboard(artigos) {
+  const artigos = await resposta.json()
 
-      document.getElementById(
-        "total-artigos"
-      ).innerText = artigos.length;
+  console.log(artigos)
 
-      const revistas = new Set(
-        artigos.map(a => a.revista)
-      );
-
-      document.getElementById(
-        "total-revistas"
-      ).innerText = revistas.size;
-
-      const categorias = new Set(
-        artigos.map(a => a.categoria)
-      );
-
-      document.getElementById(
-        "total-categorias"
-      ).innerText = categorias.size;
-
-    }
-
-    // =====================================
-    // TAGS
-    // =====================================
-
-    function criarFiltrosTags() {
-
-      const container =
-        document.getElementById(
-          "tags-container"
-        );
-
-      container.innerHTML = "";
-
-      const tags = new Set();
-
-      artigosGlobais.forEach(artigo => {
-
-        if (artigo.tags_ia) {
-
-          artigo.tags_ia.forEach(tag => {
-            tags.add(tag);
-          });
-
-        }
-
-      });
-
-      tags.forEach(tag => {
-
-        const div =
-          document.createElement("div");
-
-        div.className =
-          "filter-tag";
-
-        div.innerText =
-          tag;
-
-        div.onclick = () => {
-
-          const filtrados =
-            artigosGlobais.filter(
-              artigo =>
-
-                artigo.tags_ia &&
-                artigo.tags_ia.includes(tag)
-
-            );
-
-          renderizar(filtrados);
-
-        };
-
-        container.appendChild(div);
-
-      });
-
-    }
-
-    // =====================================
-    // RENDER
-    // =====================================
-
-    function renderizar(artigos) {
-
-      const container =
-        document.getElementById(
-          "articles"
-        );
-
-      container.innerHTML = "";
-
-      artigos.forEach(artigo => {
-
-        container.innerHTML += `
-
-          <div class="article-card">
-
-            <h2 class="article-title">
-              ${artigo.titulo}
-            </h2>
-
-            <div class="article-date">
-              ${formatarData(
-                artigo.publicado_em
-              )}
-            </div>
-
-            <p class="article-description">
-
-              ${
-                artigo.descricao_curta
-                || "Artigo científico monitorado automaticamente."
-              }
-
-            </p>
-
-            <div class="article-meta">
-
-              <div class="badge journal">
-                ${artigo.revista}
-              </div>
-
-              <div class="badge category">
-                ${artigo.categoria || "Geral"}
-              </div>
-
-              ${
-                artigo.tags_ia
-                  ? artigo.tags_ia.map(tag => `
-
-                    <div class="badge tag">
-                      ${tag}
-                    </div>
-
-                  `).join("")
-                  : ""
-              }
-
-            </div>
-
-            <a
-              class="article-link"
-              href="article.html?id=${artigo.id}"
-            >
-              Abrir artigo
-            </a>
-
-          </div>
-
-        `;
-
-      });
-
-      atualizarDashboard(artigos);
-
-    }
-
-    // =====================================
-    // PESQUISA
-    // =====================================
-
-    document
-      .getElementById("search")
-      .addEventListener(
-        "input",
-        aplicarFiltros
-      );
-
-    document
-  .getElementById("sort")
-  .addEventListener(
-    "change",
-    aplicarFiltros
-  );
-
-document
-  .getElementById("filtro-revista")
-  .addEventListener(
-    "change",
-    aplicarFiltros
-  );
-
-document
-  .getElementById("filtro-categoria")
-  .addEventListener(
-    "change",
-    aplicarFiltros
-  );
-
-    function pesquisar(evento) {
-
-      const termo =
-        evento.target.value.toLowerCase();
-
-      const filtrados =
-        artigosGlobais.filter(artigo => {
-
-          const texto = `
-
-            ${artigo.titulo || ""}
-
-            ${artigo.autores || ""}
-
-            ${artigo.categoria || ""}
-
-            ${artigo.resumo_ia || ""}
-
-            ${(artigo.tags_ia || []).join(" ")}
-
-          `.toLowerCase();
-
-          return texto.includes(termo);
-
-        });
-
-      renderizar(filtrados);
-
-    }
-
-    // =====================================
-    // FILTROS
-    // =====================================
-
-    function popularFiltros() {
-
-  const revistas =
-    new Set(
-      artigosGlobais.map(a => a.revista)
-    );
-
-  const categorias =
-    new Set(
-      artigosGlobais.map(a => a.categoria)
-    );
-
-  const revistaSelect =
-    document.getElementById(
-      "filtro-revista"
-    );
-
-  const categoriaSelect =
-    document.getElementById(
-      "filtro-categoria"
-    );
-
-  revistas.forEach(revista => {
-
-    revistaSelect.innerHTML += `
-      <option value="${revista}">
-        ${revista}
-      </option>
-    `;
-
-  });
-
-  categorias.forEach(categoria => {
-
-    categoriaSelect.innerHTML += `
-      <option value="${categoria}">
-        ${categoria}
-      </option>
-    `;
-
-  });
+  agruparRevistas(artigos)
 
 }
-    function aplicarFiltros() {
 
-  const termo =
-    document
-      .getElementById("search")
-      .value
-      .toLowerCase();
+function agruparRevistas(artigos) {
+
+  const revistas = {}
+
+  artigos.forEach(artigo => {
+
+    const nome =
+      artigo.revista || "Sem revista"
+
+    if (!revistas[nome]) {
+
+      revistas[nome] = []
+
+    }
+
+    revistas[nome].push(artigo)
+
+  })
+
+  renderizarRevistas(revistas)
+
+}
+
+function renderizarRevistas(revistas) {
+
+  const container =
+    document.getElementById("artigos")
+
+  container.innerHTML = ""
+
+  Object.entries(revistas)
+
+    .sort((a, b) => {
+
+      return b[1].length - a[1].length
+
+    })
+
+    .forEach(([nome, artigos]) => {
+
+      const card =
+        document.createElement("div")
+
+      card.className =
+        "card revista-card"
+
+      card.innerHTML = `
+
+        <h2>${nome}</h2>
+
+        <p>
+          ${artigos.length}
+          artigos monitorados
+        </p>
+
+        <button onclick="
+          abrirRevista('${nome}')
+        ">
+          Explorar periódico
+        </button>
+
+      `
+
+      container.appendChild(card)
+
+    })
+
+}
+
+function abrirRevista(nome) {
 
   const revista =
-    document
-      .getElementById("filtro-revista")
-      .value;
+    encodeURIComponent(nome)
 
-  const categoria =
-    document
-      .getElementById("filtro-categoria")
-      .value;
-
-  const ordenacao =
-    document
-      .getElementById("sort")
-      .value;
-
-  let resultado =
-    artigosGlobais.filter(artigo => {
-
-      const texto = `
-
-        ${artigo.titulo || ""}
-        ${artigo.autores || ""}
-        ${artigo.categoria || ""}
-        ${artigo.resumo_ia || ""}
-        ${(artigo.tags_ia || []).join(" ")}
-
-      `.toLowerCase();
-
-      const matchTexto =
-        texto.includes(termo);
-
-      const matchRevista =
-        !revista ||
-        artigo.revista === revista;
-
-      const matchCategoria =
-        !categoria ||
-        artigo.categoria === categoria;
-
-      return (
-        matchTexto &&
-        matchRevista &&
-        matchCategoria
-      );
-
-    });
-
-  // ORDENAÇÃO
-
-  if (ordenacao === "recentes") {
-
-    resultado.sort((a, b) =>
-      new Date(b.publicado_em)
-      - new Date(a.publicado_em)
-    );
-
-  }
-
-  if (ordenacao === "antigos") {
-
-    resultado.sort((a, b) =>
-      new Date(a.publicado_em)
-      - new Date(b.publicado_em)
-    );
-
-  }
-
-  if (ordenacao === "titulo") {
-
-    resultado.sort((a, b) =>
-      a.titulo.localeCompare(b.titulo)
-    );
-
-  }
-
-  artigosFiltrados = resultado;
-
-  renderizar(resultado);
+  window.location.href =
+    `artigos.html?revista=${revista}`
 
 }
 
-    // =====================================
-    // LOAD
-    // =====================================
-
-    async function carregar() {
-
-      const resposta = await fetch(
-        API,
-        {
-          headers: {
-            apikey: APIKEY
-          }
-        }
-      );
-
-      const dados =
-        await resposta.json();
-
-      artigosGlobais = dados;
-
-      popularFiltros();
-      renderizar(dados);
-
-      criarFiltrosTags();
-
-    }
-
-    carregar();
-
-  </script>
+carregarRevistas()
 
 </body>
 
