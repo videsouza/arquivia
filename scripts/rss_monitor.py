@@ -1,9 +1,9 @@
+```python
 import os
 import re
 import feedparser
 
 from email.utils import parsedate_to_datetime
-
 from supabase import create_client
 
 from sources import FONTES
@@ -36,9 +36,7 @@ def analisar_artigo(titulo):
 
     categoria = "Ciência da Informação"
 
-    # =====================================
     # TAGS
-    # =====================================
 
     if "memória" in texto:
         tags.append("Memória")
@@ -73,9 +71,7 @@ def analisar_artigo(titulo):
     if "gestão documental" in texto:
         tags.append("Gestão Documental")
 
-    # =====================================
     # CATEGORIA
-    # =====================================
 
     if (
         "algoritmo" in texto
@@ -128,6 +124,7 @@ def analisar_artigo(titulo):
 
         "tags_ia":
             tags
+
     }
 
 # =========================================
@@ -155,7 +152,7 @@ def extrair_edicao(texto):
     texto = texto.lower()
 
     # =====================================
-    # PADRÕES MAIS CONFIÁVEIS
+    # PADRÕES
     # =====================================
 
     padroes = [
@@ -188,7 +185,7 @@ def extrair_edicao(texto):
             break
 
     # =====================================
-    # PEGAR ANO APENAS SE EXISTIR VOLUME
+    # PEGAR ANO
     # =====================================
 
     if volume and not ano:
@@ -203,7 +200,7 @@ def extrair_edicao(texto):
             ano = ano_match.group(1)
 
     # =====================================
-    # GERAR EDIÇÃO
+    # GERAR TEXTO
     # =====================================
 
     partes = []
@@ -233,11 +230,8 @@ def extrair_edicao(texto):
     return {
 
         "volume": volume,
-
         "numero": numero,
-
         "ano": ano,
-
         "edicao": edicao
 
     }
@@ -322,7 +316,7 @@ for fonte in FONTES:
 
         autores = None
 
-        if "authors" in entry:
+        if hasattr(entry, "authors"):
 
             autores = ", ".join(
                 autor.name
@@ -335,7 +329,7 @@ for fonte in FONTES:
 
         resumo = None
 
-        if "summary" in entry:
+        if hasattr(entry, "summary"):
 
             resumo = (
                 entry.summary
@@ -349,7 +343,7 @@ for fonte in FONTES:
 
         publicado_em = None
 
-        if "published" in entry:
+        if hasattr(entry, "published"):
 
             try:
 
@@ -359,17 +353,17 @@ for fonte in FONTES:
                     ).isoformat()
                 )
 
-            except:
+            except Exception:
 
                 publicado_em = None
 
         # =================================
-        # TEXTO DA EDIÇÃO
+        # TEXTO EDIÇÃO
         # =================================
 
         texto_edicao = ""
 
-        if "tags" in entry:
+        if hasattr(entry, "tags"):
 
             for tag in entry.tags:
 
@@ -380,7 +374,7 @@ for fonte in FONTES:
                         + tag.term
                     )
 
-        if "summary" in entry:
+        if hasattr(entry, "summary"):
 
             texto_edicao += (
                 " "
@@ -448,6 +442,7 @@ for fonte in FONTES:
 
             "edicao":
                 dados_edicao["edicao"]
+
         }
 
         # =================================
@@ -464,7 +459,6 @@ for fonte in FONTES:
             ).execute()
 
             print("Artigo salvo:")
-
             print(
                 f"Edição: "
                 f"{dados_edicao['edicao']}"
