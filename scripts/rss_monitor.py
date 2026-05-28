@@ -139,43 +139,61 @@ def extrair_edicao(texto):
     edicao = None
 
     if not texto:
+
         return {
+
             "volume": None,
             "numero": None,
             "ano": None,
             "edicao": None
+
         }
+
+    texto_original = texto
 
     texto = texto.lower()
 
     # =====================================
-    # REGEX PRINCIPAL
+    # PADRÕES MAIS CONFIÁVEIS
     # =====================================
 
-    match = re.search(
+    padroes = [
 
-        r'v\.?\s*(\d+)'
-        r'.*?n\.?\s*(\d+)'
-        r'.*?(\d{4})',
+        r'v\.?\s*(\d+)\s*[,.-]?\s*n\.?\s*(\d+)\s*[,.-]?\s*(\d{4})',
 
-        texto
+        r'volume\s*(\d+)\s*[,.-]?\s*n[uú]mero\s*(\d+)\s*[,.-]?\s*(\d{4})',
 
-    )
+        r'v\.?\s*(\d+)\s*n\.?\s*(\d+)'
 
-    if match:
+    ]
 
-        volume = match.group(1)
-        numero = match.group(2)
-        ano = match.group(3)
+    for padrao in padroes:
 
-    else:
+        match = re.search(
+            padrao,
+            texto
+        )
 
-        # =================================
-        # TENTA PEGAR APENAS ANO
-        # =================================
+        if match:
+
+            volume = match.group(1)
+
+            numero = match.group(2)
+
+            if len(match.groups()) >= 3:
+
+                ano = match.group(3)
+
+            break
+
+    # =====================================
+    # TENTAR PEGAR ANO PRÓXIMO
+    # =====================================
+
+    if volume and not ano:
 
         ano_match = re.search(
-            r'(\d{4})',
+            r'(20\d{2})',
             texto
         )
 
@@ -184,19 +202,28 @@ def extrair_edicao(texto):
             ano = ano_match.group(1)
 
     # =====================================
-    # EDIÇÃO HUMANA
+    # GERAR EDIÇÃO
     # =====================================
 
     partes = []
 
     if volume:
-        partes.append(f"v.{volume}")
+
+        partes.append(
+            f"v.{volume}"
+        )
 
     if numero:
-        partes.append(f"n.{numero}")
+
+        partes.append(
+            f"n.{numero}"
+        )
 
     if ano:
-        partes.append(f"({ano})")
+
+        partes.append(
+            f"({ano})"
+        )
 
     if partes:
 
@@ -211,6 +238,7 @@ def extrair_edicao(texto):
         "ano": ano,
 
         "edicao": edicao
+
     }
 
 # =========================================
@@ -318,11 +346,20 @@ for fonte in FONTES:
         # DATA
         # =================================
 
+        from email.utils import parsedate_to_datetime
+
         publicado_em = None
 
         if "published" in entry:
+            try:
+                publicado_em = (
+                    parsedate_to_datetime(
+                        entry.published
+                    ).isoformat()
+                )
 
-            publicado_em = entry.published
+        except:
+            publicado_em = None
 
         # =================================
         # TEXTO DA EDIÇÃO
