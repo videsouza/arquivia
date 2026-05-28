@@ -1,8 +1,12 @@
+```python
 import os
 import re
 import feedparser
 
+from email.utils import parsedate_to_datetime
+
 from supabase import create_client
+
 from sources import FONTES
 
 print("Iniciando ArquivIA...")
@@ -149,8 +153,6 @@ def extrair_edicao(texto):
 
         }
 
-    texto_original = texto
-
     texto = texto.lower()
 
     # =====================================
@@ -159,9 +161,9 @@ def extrair_edicao(texto):
 
     padroes = [
 
-        r'v\.?\s*(\d+)\s*[,.-]?\s*n\.?\s*(\d+)\s*[,.-]?\s*(\d{4})',
+        r'v\.?\s*(\d+)\s*[,.-]?\s*n\.?\s*(\d+)\s*[,.-]?\s*(20\d{2})',
 
-        r'volume\s*(\d+)\s*[,.-]?\s*n[uú]mero\s*(\d+)\s*[,.-]?\s*(\d{4})',
+        r'volume\s*(\d+)\s*[,.-]?\s*n[uú]mero\s*(\d+)\s*[,.-]?\s*(20\d{2})',
 
         r'v\.?\s*(\d+)\s*n\.?\s*(\d+)'
 
@@ -187,7 +189,7 @@ def extrair_edicao(texto):
             break
 
     # =====================================
-    # TENTAR PEGAR ANO PRÓXIMO
+    # PEGAR ANO APENAS SE EXISTIR VOLUME
     # =====================================
 
     if volume and not ano:
@@ -346,20 +348,21 @@ for fonte in FONTES:
         # DATA
         # =================================
 
-        from email.utils import parsedate_to_datetime
-
         publicado_em = None
 
         if "published" in entry:
+
             try:
+
                 publicado_em = (
                     parsedate_to_datetime(
                         entry.published
                     ).isoformat()
                 )
 
-        except:
-            publicado_em = None
+            except:
+
+                publicado_em = None
 
         # =================================
         # TEXTO DA EDIÇÃO
@@ -461,9 +464,7 @@ for fonte in FONTES:
                 on_conflict="link"
             ).execute()
 
-            print(
-                "Artigo salvo:"
-            )
+            print("Artigo salvo:")
 
             print(
                 f"Edição: "
@@ -476,3 +477,4 @@ for fonte in FONTES:
             print(erro)
 
 print("\nArquivIA finalizado.")
+```
